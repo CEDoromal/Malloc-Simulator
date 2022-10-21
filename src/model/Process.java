@@ -15,12 +15,18 @@ public class Process {
     private int size;
     private int time;
     private Color color;
+    private boolean hole = false;
 
     public Process(String name, int size, int time) {
-        this.name = (time>0)? name : "hole";
         this.size = size;
         this.time = time;
-        color = (time>0)? Color.getHSBColor((float) Math.random(),(float) 0.7,(float) 0.7) : Color.GRAY;
+        hole = time <= 0;
+        this.name = (hole)? "hole" : name;
+        color = (hole)? Color.GRAY : Color.getHSBColor((float) Math.random(),(float) 0.7,(float) 0.7);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getSize() {
@@ -38,13 +44,22 @@ public class Process {
     public void decrementTime() {
         time--;
         if (time <= 0) {
-            name = "hole";
-            color = Color.GRAY;
+            turnIntoHole();
         }
     }
 
     public Color getColor() {
         return color;
     }
+
+    public boolean isHole() {
+        return hole;
+    }
     
+    public void turnIntoHole() {
+        hole = true;
+        time = 0;
+        name = "hole";
+        color = Color.gray;
+    }
 }
