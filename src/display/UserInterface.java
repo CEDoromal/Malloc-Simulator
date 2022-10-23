@@ -1,8 +1,7 @@
-package view;
+package display;
 
-import java.util.ArrayList;
-import model.Memory;
-import model.Process;
+import javax.swing.JPanel;
+import simulator.Simulator;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -15,19 +14,21 @@ import model.Process;
  */
 public class UserInterface extends javax.swing.JFrame {
 
-    private Memory memory;
-    private MemoryVisualizer memoryVisualizer;
-    private ArrayList<Process> processList;
-    private int currentTime = 0;
-    private int coalesceTime = 1;
-    private int compactTime = 1;
+    private Simulator simulator;
     
-    //use confirm function to generate new memory and visualizer and proceed with simulation
+    public JPanel getMemVisContainer() {
+        return memBarPanel;
+    }
     
+    public void toggleComponents() {
+        startSimButton.setEnabled(!startSimButton.isEnabled());
+        addProcessButton.setEnabled(!addProcessButton.isEnabled());
+    }
+          
     /** Creates new form UserInterface */
-    public UserInterface() {
+    public UserInterface(Simulator simulator) {
         initComponents();
-        processList = new ArrayList<>();
+        this.simulator = simulator;
     }
 
     /** This method is called from within the constructor to
@@ -50,7 +51,7 @@ public class UserInterface extends javax.swing.JFrame {
         mCompactTextField = new javax.swing.JFormattedTextField();
         mCoalesceTextField = new javax.swing.JFormattedTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        processTable = new javax.swing.JTable();
         processParamPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -65,6 +66,7 @@ public class UserInterface extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         memBarPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        memBarPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
         simParamPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -139,8 +141,8 @@ public class UserInterface extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTable2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        processTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        processTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null}
@@ -157,7 +159,7 @@ public class UserInterface extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
-        jScrollPane2.setViewportView(jTable2);
+        jScrollPane2.setViewportView(processTable);
 
         processParamPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -204,10 +206,10 @@ public class UserInterface extends javax.swing.JFrame {
                             .addComponent(jLabel7)
                             .addComponent(jLabel6))
                         .addGap(35, 35, 35)
-                        .addGroup(processParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(pSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(processParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(pSizeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                            .addComponent(pTimeTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
+                            .addComponent(pNameTextField))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         processParamPanelLayout.setVerticalGroup(
@@ -274,55 +276,49 @@ public class UserInterface extends javax.swing.JFrame {
 
     private void addProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addProcessButtonActionPerformed
         //TODO: add guard clauses
-        processList.add(new Process(pNameTextField.getText(), Integer.parseInt(pSizeTextField.getText()), Integer.parseInt(pTimeTextField.getText())));
+        simulator.addProcess(pNameTextField.getText(), Integer.parseInt(pSizeTextField.getText()), Integer.parseInt(pTimeTextField.getText()));
         //TODO: add process to table
     }//GEN-LAST:event_addProcessButtonActionPerformed
 
     private void startSimButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimButtonActionPerformed
         //TODO: add guard clauses
-        memory = new Memory(Integer.parseInt(mSizeTextField.getText()));
-        memoryVisualizer = new MemoryVisualizer(memory, memBarPanel.getWidth(), memBarPanel.getHeight());
-        coalesceTime = Integer.parseInt(mCoalesceTextField.getText());
-        compactTime = Integer.parseInt(mCompactTextField.getText());
-        memBarPanel.removeAll();
-        memBarPanel.add(memoryVisualizer);
-        //TODO: start timer/sim
+        simulator.start(Integer.parseInt(mSizeTextField.getText()), Integer.parseInt(mCoalesceTextField.getText()), Integer.parseInt(mCompactTextField.getText()));
     }//GEN-LAST:event_startSimButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserInterface().setVisible(true);
-            }
-        });
-    }
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new UserInterface().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addProcessButton;
@@ -336,7 +332,6 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable2;
     private javax.swing.JFormattedTextField mCoalesceTextField;
     private javax.swing.JFormattedTextField mCompactTextField;
     private javax.swing.JFormattedTextField mSizeTextField;
@@ -345,6 +340,7 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField pSizeTextField;
     private javax.swing.JFormattedTextField pTimeTextField;
     private javax.swing.JPanel processParamPanel;
+    private javax.swing.JTable processTable;
     private javax.swing.JPanel simParamPanel;
     private javax.swing.JButton startSimButton;
     // End of variables declaration//GEN-END:variables

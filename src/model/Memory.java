@@ -39,6 +39,7 @@ public class Memory {
                     allocation.remove(i);
                 }
                 allocation.add(i, process);
+                process.setInMemory(true);
                 return true;
             }
         }
@@ -75,10 +76,8 @@ public class Memory {
                 moves++;
             }
         }
-        if (moves > 0) {
-            if(coalesce()) {
-                moves++;
-            }
+        if(coalesce()) {
+            moves++;
         }
         return moves;
     }

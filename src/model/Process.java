@@ -16,6 +16,7 @@ public class Process {
     private int time;
     private Color color;
     private boolean hole = false;
+    private boolean inMemory = false;
 
     public Process(String name, int size, int time) {
         this.size = size;
@@ -41,11 +42,14 @@ public class Process {
         return time;
     }
     
-    public void decrementTime() {
+    //returns true if process ended
+    public boolean decrementTime() {
         time--;
         if (time <= 0) {
             turnIntoHole();
+            return true;
         }
+        return false;
     }
 
     public Color getColor() {
@@ -62,4 +66,14 @@ public class Process {
         name = "hole";
         color = Color.gray;
     }
+
+    public boolean isInMemory() {
+        return inMemory;
+    }
+
+    public void setInMemory(boolean inMemory) {
+        this.inMemory = inMemory;
+    }
+    
+    
 }
