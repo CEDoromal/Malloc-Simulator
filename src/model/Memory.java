@@ -19,6 +19,14 @@ public class Memory {
         this.capacity = capacity;
         allocation.add(new Process("hole", capacity, 0));
     }
+
+    public int getCapacity() {
+        return capacity;
+    }
+    
+    public ArrayList<Process> getAllocation() {
+        return allocation;
+    }
     
     //returns true if allocation is successful
     public boolean allocateFirstFit(Process process) {
