@@ -83,12 +83,12 @@ public class Simulator {
             }
             
             //run next job
-            if(rrCounter >= inMemoryList.size()) rrCounter = 0;
             if (inMemoryList.get(rrCounter).decrementTime()) {
                 inMemoryList.remove(rrCounter);
             } else {
                 rrCounter++;
             }
+            if(rrCounter >= inMemoryList.size()) rrCounter = 0;
             currentTime++;
             memoryVisualizer.repaint();
             ui.setTime(currentTime);
