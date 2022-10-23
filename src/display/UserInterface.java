@@ -76,6 +76,8 @@ public class UserInterface extends javax.swing.JFrame {
         timeIndicator = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Memory Allocation");
+        setResizable(false);
 
         memBarPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
