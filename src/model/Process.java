@@ -26,6 +26,13 @@ public class Process {
         color = (hole)? Color.GRAY : Color.getHSBColor((float) Math.random(),(float) 0.7,(float) 0.7);
     }
 
+    public Process(String name, int size, int time, Color color) {
+        this.name = name;
+        this.size = size;
+        this.time = time;
+        this.color = color;
+    }
+
     public String getName() {
         return name;
     }

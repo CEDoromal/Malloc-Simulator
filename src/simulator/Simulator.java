@@ -11,6 +11,7 @@ import javax.swing.Timer;
 import display.MemoryVisualizer;
 import display.UserInterface;
 import java.awt.Container;
+import javax.swing.JLabel;
 import model.Memory;
 import model.Process;
 
@@ -23,6 +24,7 @@ public class Simulator {
     private Memory memory;
     private MemoryVisualizer memoryVisualizer;
     private Container memVisContainer;
+    private ArrayList<Process> processList;
     private ArrayList<Process> queueList;
     private ArrayList<Process> inMemoryList;
     private int currentTime = 0;
@@ -31,6 +33,7 @@ public class Simulator {
     private int rrCounter = 0;
 
     public Simulator() {
+        processList = new ArrayList<>();
         queueList = new ArrayList<>();
         inMemoryList = new ArrayList<>();
         ui = new UserInterface(this);
@@ -44,7 +47,6 @@ public class Simulator {
             if (inMemoryList.isEmpty() && queueList.isEmpty()) {
                 simulation.stop();
                 ui.toggleComponents();
-                //end the simulation and output total time
                 return;
             }
 
@@ -54,6 +56,7 @@ public class Simulator {
                 if (compactMoves > 0) {
                     currentTime += compactMoves;
                     memoryVisualizer.repaint();
+                    ui.setTime(currentTime);
                     return;
                 }
             }
@@ -62,6 +65,7 @@ public class Simulator {
             if (currentTime%coalesceTime == 0 && memory.coalesce()) {
                 currentTime++;
                 memoryVisualizer.repaint();
+                ui.setTime(currentTime);
                 return;
             }
             
@@ -73,37 +77,47 @@ public class Simulator {
                     queueList.remove(i);
                     currentTime++;
                     memoryVisualizer.repaint();
+                    ui.setTime(currentTime);
                     return;
                 }
             }
             
             //run next job
+            if(rrCounter >= inMemoryList.size()) rrCounter = 0;
             if (inMemoryList.get(rrCounter).decrementTime()) {
                 inMemoryList.remove(rrCounter);
-            } else if (rrCounter < inMemoryList.size()-1) {
-                rrCounter++;
             } else {
-                rrCounter = 0;
+                rrCounter++;
             }
             currentTime++;
             memoryVisualizer.repaint();
+            ui.setTime(currentTime);
         }
     });
     
     public void addProcess(String name, int size, int time) {
-        queueList.add(new Process(name, size, time));
+        processList.add(new Process(name, size, time));
     }
     
     public void clearProcess() {
+        processList.clear();
         queueList.clear();
+        inMemoryList.clear();
     }
     
     public void start(int memorySize, int coalesceTime, int compactTime) {
         ui.toggleComponents();
-        memory = new Memory(memorySize);
-        memoryVisualizer = new MemoryVisualizer(memory, memVisContainer.getWidth(), memVisContainer.getHeight());
+        currentTime = 0;
+        rrCounter = 0;
         this.coalesceTime = coalesceTime;
         this.compactTime = compactTime;
+        memory = new Memory(memorySize);
+        memoryVisualizer = new MemoryVisualizer(memory, memVisContainer.getWidth(), memVisContainer.getHeight());
+        queueList.clear();
+        for (Process process : processList) {
+            queueList.add(new Process(process.getName(), process.getSize(), process.getTime(), process.getColor()));
+        }
+        inMemoryList.clear();
         memVisContainer.removeAll();
         memVisContainer.add(memoryVisualizer);
         simulation.start();

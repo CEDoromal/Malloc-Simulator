@@ -1,6 +1,8 @@
 package display;
 
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.table.DefaultTableModel;
 import simulator.Simulator;
 
 /*
@@ -14,21 +16,28 @@ import simulator.Simulator;
  */
 public class UserInterface extends javax.swing.JFrame {
 
-    private Simulator simulator;
+    private final Simulator simulator;
+    private final DefaultTableModel dtm;
     
     public JPanel getMemVisContainer() {
         return memBarPanel;
     }
     
+    public void setTime(int time) {
+        timeIndicator.setText(String.valueOf(time));
+    }
+    
     public void toggleComponents() {
         startSimButton.setEnabled(!startSimButton.isEnabled());
         addProcessButton.setEnabled(!addProcessButton.isEnabled());
+        clearProcessButton.setEnabled(!clearProcessButton.isEnabled());
     }
           
     /** Creates new form UserInterface */
     public UserInterface(Simulator simulator) {
         initComponents();
         this.simulator = simulator;
+        dtm = (DefaultTableModel) processTable.getModel();
     }
 
     /** This method is called from within the constructor to
@@ -61,12 +70,25 @@ public class UserInterface extends javax.swing.JFrame {
         addProcessButton = new javax.swing.JButton();
         pSizeTextField = new javax.swing.JFormattedTextField();
         pTimeTextField = new javax.swing.JFormattedTextField();
+        clearProcessButton = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        timeIndicator = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         memBarPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        memBarPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+
+        javax.swing.GroupLayout memBarPanelLayout = new javax.swing.GroupLayout(memBarPanel);
+        memBarPanel.setLayout(memBarPanelLayout);
+        memBarPanelLayout.setHorizontalGroup(
+            memBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 212, Short.MAX_VALUE)
+        );
+        memBarPanelLayout.setVerticalGroup(
+            memBarPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 412, Short.MAX_VALUE)
+        );
 
         simParamPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
@@ -111,13 +133,14 @@ public class UserInterface extends javax.swing.JFrame {
                     .addComponent(mCompactTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(mCoalesceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 40, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, simParamPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(startSimButton)
-                .addGap(89, 89, 89))
             .addGroup(simParamPanelLayout.createSequentialGroup()
-                .addGap(66, 66, 66)
-                .addComponent(jLabel5)
+                .addGroup(simParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(simParamPanelLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(jLabel5))
+                    .addGroup(simParamPanelLayout.createSequentialGroup()
+                        .addGap(85, 85, 85)
+                        .addComponent(startSimButton)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         simParamPanelLayout.setVerticalGroup(
@@ -144,8 +167,7 @@ public class UserInterface extends javax.swing.JFrame {
         processTable.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         processTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null}
+
             },
             new String [] {
                 "Process", "Size", "Time Unit"
@@ -186,6 +208,13 @@ public class UserInterface extends javax.swing.JFrame {
         pTimeTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
         pTimeTextField.setText("1");
 
+        clearProcessButton.setText("Clear");
+        clearProcessButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearProcessButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout processParamPanelLayout = new javax.swing.GroupLayout(processParamPanel);
         processParamPanel.setLayout(processParamPanelLayout);
         processParamPanelLayout.setHorizontalGroup(
@@ -195,12 +224,13 @@ public class UserInterface extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addGap(75, 75, 75))
             .addGroup(processParamPanelLayout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addGroup(processParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(processParamPanelLayout.createSequentialGroup()
-                        .addGap(57, 57, 57)
-                        .addComponent(addProcessButton))
+                        .addComponent(clearProcessButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(addProcessButton, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(processParamPanelLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addGroup(processParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel7)
@@ -229,11 +259,17 @@ public class UserInterface extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(pTimeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(addProcessButton)
+                .addGroup(processParamPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addProcessButton)
+                    .addComponent(clearProcessButton))
                 .addContainerGap())
         );
 
         jLabel9.setText("Memory");
+
+        jLabel3.setText("Current Time:");
+
+        timeIndicator.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -250,7 +286,11 @@ public class UserInterface extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel9)
-                    .addComponent(memBarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(memBarPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timeIndicator)))
                 .addContainerGap(70, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -267,7 +307,11 @@ public class UserInterface extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(memBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(memBarPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(timeIndicator))))
                 .addContainerGap())
         );
 
@@ -275,15 +319,18 @@ public class UserInterface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addProcessButtonActionPerformed
-        //TODO: add guard clauses
         simulator.addProcess(pNameTextField.getText(), Integer.parseInt(pSizeTextField.getText()), Integer.parseInt(pTimeTextField.getText()));
-        //TODO: add process to table
+        dtm.addRow(new Object[]{pNameTextField.getText(), Integer.parseInt(pSizeTextField.getText()), Integer.parseInt(pTimeTextField.getText())});
     }//GEN-LAST:event_addProcessButtonActionPerformed
 
     private void startSimButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimButtonActionPerformed
-        //TODO: add guard clauses
         simulator.start(Integer.parseInt(mSizeTextField.getText()), Integer.parseInt(mCoalesceTextField.getText()), Integer.parseInt(mCompactTextField.getText()));
     }//GEN-LAST:event_startSimButtonActionPerformed
+
+    private void clearProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearProcessButtonActionPerformed
+        simulator.clearProcess();
+        dtm.setRowCount(0);
+    }//GEN-LAST:event_clearProcessButtonActionPerformed
 
 //    /**
 //     * @param args the command line arguments
@@ -322,9 +369,11 @@ public class UserInterface extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addProcessButton;
+    private javax.swing.JButton clearProcessButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -343,6 +392,7 @@ public class UserInterface extends javax.swing.JFrame {
     private javax.swing.JTable processTable;
     private javax.swing.JPanel simParamPanel;
     private javax.swing.JButton startSimButton;
+    private javax.swing.JLabel timeIndicator;
     // End of variables declaration//GEN-END:variables
 
 }

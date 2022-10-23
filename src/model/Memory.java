@@ -70,7 +70,7 @@ public class Memory {
             Process allocated = allocation.get(i);
             if (slotIndex < 0 && allocated.isHole()) {
                 slotIndex = i;
-            } else if (slotIndex > 0 && !allocated.isHole()) {
+            } else if (slotIndex >= 0 && !allocated.isHole()) {
                 Collections.swap(allocation, slotIndex, i);
                 slotIndex++;
                 moves++;

@@ -16,29 +16,29 @@ import model.Process;
  */
 public class MemoryVisualizer extends JPanel {
     private final Memory memory;
+    private final int width, height;
     
     public MemoryVisualizer(Memory memory, int width, int height) {
         this.memory = memory;
-        super.setSize(width, height);
+        this.setSize(width, height);
+        this.width = width;
+        this.height = height;
     }
     
     @Override
     protected void paintComponent(Graphics g){
         //super.paintComponent(g);
-        int width = this.getWidth();
-        int height = this.getHeight();
         int posY = 0;
         g.setColor(Color.WHITE);
-        System.out.println(g.getColor());
         g.fillRect(0, 0, width, height);
         for (Process process : memory.getAllocation()) {
             int pHeight = posY + process.getSize()*height/memory.getCapacity();
             g.setColor(process.getColor());
-            System.out.println(g.getColor());
             g.fillRect(0, posY, width, pHeight);
+            g.setColor(Color.BLACK);
+            g.drawRect(0, posY, width, pHeight);
             g.setColor(Color.WHITE);
-            System.out.println(g.getColor());
-            g.drawString(process.getName() + " - Size: " + process.getSize() + (!process.isHole()? " - Time: " + process.getTime() : ""), 0, pHeight);
+            g.drawString(process.getName() + " - Size: " + process.getSize() + (!process.isHole()? " - Time: " + process.getTime() : ""), 3, pHeight-3);
             posY = pHeight;
         }
     }
